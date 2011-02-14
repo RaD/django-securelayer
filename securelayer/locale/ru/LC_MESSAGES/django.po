@@ -1,0 +1,52 @@
+# Django application to communicate with http://securelayer.ru/
+# Copyright (C) 2011 Ruslan Popov
+# This file is distributed under the same license as the django-securelayer package.
+# Ruslan Popov <ruslan.popov@gmail.com>, 2011.
+# Ruslan Popov <ruslan.popov@gmail.com>, 2011.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-02-14 20:18+0300\n"
+"PO-Revision-Date: 2011-02-14 20:19+0300\n"
+"Last-Translator: Ruslan Popov <ruslan.popov@gmail.com>\n"
+"Language-Team: ru <RUL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: __init__.py:30
+#, python-format
+msgid "Field %s is not supported!"
+msgstr "Поле %s не поддерживается!"
+
+#: http.py:71
+msgid "No response."
+msgstr "Нет отклика."
+
+#: http.py:80
+msgid "Authenticate Yourself."
+msgstr "Кто вы."
+
+#: http.py:83
+msgid "Internal Error."
+msgstr "Внутренняя ошибка."
+
+#: views.py:35
+msgid "Request error."
+msgstr "Ошибка запроса."
+
+#: views.py:53
+msgid "Redirect"
+msgstr "Перейти"
+
+#: views.py:55
+msgid "You will be redirected on SecureLayer for secure data entering."
+msgstr "Вы будете перенаправлены на SecureLayer для безопасного ввода данных."
+
+#: views.py:72
+msgid "The data would be transferred by open channel."
+msgstr "Данные будут переданы по открытому каналу."
