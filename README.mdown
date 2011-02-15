@@ -15,16 +15,16 @@ Application django-securelayer allows your site to get SSL faster.
 
 3. Add the following parameters into settings.py:
 
-   SECURELAYER_HOST = 'securelayer.ru'
-   SECURELAYER_PORT = 443
-   GPG_HOMEDIR = '<PATH TO/gpgring>'
-   GPG_PASSPHRASE = '<PASSWORD FOR YOUR PRIVATE GPG KEY>'
+       SECURELAYER_HOST = 'securelayer.ru'
+       SECURELAYER_PORT = 443
+       GPG_HOMEDIR = '<PATH TO/gpgring>'
+       GPG_PASSPHRASE = '<PASSWORD FOR YOUR PRIVATE GPG KEY>'
 
 4. Edit GPG template (see gen_key.template) and change <VALUES> as you wish.
 
 5. Generate your own GPG key pair:
 
-   gpg --homedir=<PATH TO/gpgring> --batch --gen-key <PATH TO/gen_key.template>
+       gpg --homedir=<PATH TO/gpgring> --batch --gen-key <PATH TO/gen_key.template>
 
 6. Register your account on http://securelayer.ru/ and submit your GPG public key there.
 
@@ -32,27 +32,27 @@ Application django-securelayer allows your site to get SSL faster.
 
    a) add the following into your forms' module:
 
-      from securelayer import SecuredForm
+          from securelayer import SecuredForm
 
    b) inherite your form from SecuredForm, not forms.Form.
 
    c) add the following into your views' module:
 
-      from securelayer import views as securelayer
+          from securelayer import views as securelayer
 
    d) prepend your view with the decorator:
 
-      @securelayer.form(<form_class>,
-                        caption=ugettext(u'The title of a form.'),
-                        desc=ugettext(u'Enter here a form's description.'))
+          @securelayer.form(<form_class>,
+                            caption=ugettext(u'The title of a form.'),
+                            desc=ugettext(u'Enter here a form's description.'))
 
    e) process your form with a code like this:
 
-      if request.method == 'POST' or \
-         'JSON' == getattr(form, 'source', None):
-          if form.is_valid():
-              form.save()
-              return redirect(reverse('post_success_view'))
+          if request.method == 'POST' or \
+             'JSON' == getattr(form, 'source', None):
+              if form.is_valid():
+                  form.save()
+                  return redirect(reverse('post_success_view'))
 
 ## License ##
 
