@@ -7,7 +7,7 @@ Application django-securelayer allows your site to get SSL faster.
 
 1. Install application into system
 
-    python setup.py install
+        python setup.py install
 
    or use PIP
 
