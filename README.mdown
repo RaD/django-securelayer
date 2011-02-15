@@ -11,9 +11,24 @@ Application django-securelayer allows your site to get SSL faster.
 
    or use PIP
 
-2. Add 'securelayer' into 'INSTALLED_APPS'.
+2. Add 'securelayer' into 'INSTALLED_APPS' in settings.py.
 
-3. Let your form to work with SecureLayer:
+3. Add the following parameters into settings.py:
+
+   SECURELAYER_HOST = 'securelayer.ru'
+   SECURELAYER_PORT = 443
+   GPG_HOMEDIR = '<PATH TO/gpgring>'
+   GPG_PASSPHRASE = '<PASSWORD FOR YOUR PRIVATE GPG KEY>'
+
+4. Edit GPG template (see gen_key.template) and change <VALUES> as you wish.
+
+5. Generate your own GPG key pair:
+
+   gpg --homedir=<PATH TO/gpgring> --batch --gen-key <PATH TO/gen_key.template>
+
+6. Register your account on http://securelayer.ru/ and submit your GPG public key there.
+
+7. Let your form to work with SecureLayer:
 
    a) add the following into your forms' module:
 
