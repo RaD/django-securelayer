@@ -2,22 +2,26 @@
 # (c) 2009-2011 Ruslan Popov <ruslan.popov@gmail.com>
 
 from django.utils.translation import ugettext_lazy as _
-import httplib, urllib, json
+from django.utils import simplejson
+import httplib, urllib, sys
 
 class Http:
 
     host = None
     port = 80
+    protocol = httplib.HTTPConnection
     session_id = None
     headers = {
         'Content-type': 'application/x-www-form-urlencoded',
         'Accept': 'text/plain'
         }
 
-    def __init__(self, host, port=80):
+    def __init__(self, host, port=80, protocol='http'):
         self.host = host
         self.port = port
         self.connect()
+        if protocol == 'https':
+            self.protocol =  httplib.HTTPSConnection
 
     def __del__(self):
         self.disconnect()
@@ -27,7 +31,7 @@ class Http:
             self.host = host
         if port:
             self.port = port
-        self.conn = httplib.HTTPConnection('%s:%s' % (self.host, self.port))
+        self.conn = self.protocol('%s:%s' % (self.host, self.port))
 
     def disconnect(self):
         self.conn.close()
@@ -39,14 +43,14 @@ class Http:
     def is_session_open(self):
         return self.session_id is not None
 
-    def request(self, url, params): # public
+    def request(self, url, method='POST', params={}): # public
         if self.session_id and self.session_id not in self.headers:
             self.headers.update( { 'Cookie': 'sessionid=%s' % self.session_id } )
 
         params = urllib.urlencode(params)
         while True:
             try:
-                self.conn.request('POST', url, params, self.headers)
+                self.conn.request(method, url, params, self.headers)
                 break
             except httplib.CannotSendRequest:
                 self.reconnect()
@@ -61,20 +65,21 @@ class Http:
         if cookie_string:
             cookie = {}
             for item in cookie_string.split('; '):
-                key, value = item.split('=')
+                try:
+                    key, value = item.split('=', 1)
+                except ValueError:
+                    pass
                 cookie.update( { key: value } )
             self.session_id = cookie.get('sessionid', None)
         return True
 
-    def parse(self): # public
+    def parse(self, is_json=True): # public
         if not self.response: # request failed
             return { 'status': 599, 'desc': _('No response.') }
         if self.response.status == 200: # http status
-            data = self.response.read()
-            if hasattr(json, 'read'):
-                response = json.read(data) # 2.5
-            else:
-                response = json.loads(data) # 2.6
+            response = self.response.read()
+            if is_json:
+                response = simplejson.loads(response)
             return response
         elif self.response.status == 302: # authentication
             return { 'status': 302, 'desc': _('Authenticate Yourself.') }
@@ -83,3 +88,40 @@ class Http:
             return { 'status': 500, 'desc': _('Internal Error.') }
         else:
             return { 'status': self.response.status, 'desc': self.response.reason }
+
+def check(boolean):
+    if boolean:
+        print 'passed'
+    else:
+        print 'failed'
+
+if __name__=="__main__":
+    print 'GET to http://ya.ru/',
+    h = Http('ya.ru', 80, 'http')
+    h.connect()
+    h.request('/', 'GET')
+    resp = h.parse(False)
+    check( '<!DOCTYPE HTML PUBLIC' == resp[:21] )
+
+    print 'POST to http://ya.ru/',
+    h = Http('ya.ru', 80, 'http')
+    h.connect()
+    h.request('/', 'POST')
+    resp = h.parse(False)
+    check( '<!DOCTYPE HTML PUBLIC' == resp[:21] )
+
+    print 'GET to https://yandex.ru/',
+    h = Http('yandex.ru', 443, 'https')
+    h.connect()
+    h.request('/', 'GET')
+    resp = h.parse(False)
+    check( type(resp) is dict and resp['status'] != 500 )
+
+    print 'POST to https://yandex.ru/',
+    h = Http('yandex.ru', 443, 'https')
+    h.connect()
+    h.request('/', 'POST')
+    resp = h.parse(False)
+    check( type(resp) is dict and resp['status'] != 500 )
+
+    sys.exit(0)

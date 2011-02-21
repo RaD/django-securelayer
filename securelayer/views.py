@@ -27,7 +27,7 @@ def secured_request(url, params={}, session_key=None):
     http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT)
     if session_key:
         http.session_id = session_key
-    if http.request(url, {'data': sign_this(params)}):
+    if http.request(url, 'POST', {'data': sign_this(params)}):
         response = http.parse()
         if response.get('status', None) == 200:
             return (True, response, http.session_id)
