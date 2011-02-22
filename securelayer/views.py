@@ -8,7 +8,7 @@ from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import redirect
 
-from securelayer.http import Http
+from securelayer.http import Http, Https
 
 import gnupg
 
@@ -25,7 +25,10 @@ def sign_this(data):
 
 def secured_request(url, params={}, session_key=None):
     """ Realizes data transfer through SSL. Sends params to URL. Uses Cookies."""
-    http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT, 'https')
+    if settings.DEBUG:
+        http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT)
+    else:
+        http = Https(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT)
     if session_key:
         http.session_id = session_key
     if http.request(url, 'POST', {'data': sign_this(params)}):
@@ -47,7 +50,8 @@ def use_secured_form(request, form, context, caption, desc):
             return form
         else:
             context.update( {
-                'action': 'https://%s:%s/show/' % (
+                'action': '%s://%s:%s/show/' % (
+                    settings.DEBUG and 'http' or 'https',
                     settings.SECURELAYER_HOST,
                     settings.SECURELAYER_PORT),
                 'button_list': [{'title': _(u'Redirect'),

@@ -6,25 +6,22 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
 import httplib, urllib, sys
 
-class Http:
+class Abstract(object):
 
     host = None
-    port = 80
-    protocol = httplib.HTTPConnection
+    port = None
+    protocol = None
     session_id = None
     headers = {
         'Content-type': 'application/x-www-form-urlencoded',
         'Accept': 'text/plain'
         }
 
-    def __init__(self, host, port=80, protocol='http'):
+    def __init__(self, host, port=80):
         self.host = host
-        self.port = port
+        if port:
+            self.port = port
         self.connect()
-        if protocol == 'https':
-            self.protocol =  httplib.HTTPSConnection
-        if settings.DEBUG:
-            print 'SecureLayer URL: %s://%s:%s' % (protocol, host, port)
 
     def __del__(self):
         self.disconnect()
@@ -92,6 +89,22 @@ class Http:
         else:
             return { 'status': self.response.status, 'desc': self.response.reason }
 
+class Http(Abstract):
+
+    port = 80
+    protocol = httplib.HTTPConnection
+
+    def __init__(self, host, port=None):
+        super(Http, self).__init__(host, port)
+
+class Https(Abstract):
+
+    port = 443
+    protocol = httplib.HTTPSConnection
+
+    def __init__(self, host, port=None):
+        super(Https, self).__init__(host, port)
+
 def check(boolean):
     if boolean:
         print 'passed'
@@ -100,28 +113,28 @@ def check(boolean):
 
 if __name__=="__main__":
     print 'GET to http://ya.ru/',
-    h = Http('ya.ru', 80, 'http')
+    h = Http('ya.ru')
     h.connect()
     h.request('/', 'GET')
     resp = h.parse(False)
     check( '<!DOCTYPE HTML PUBLIC' == resp[:21] )
 
     print 'POST to http://ya.ru/',
-    h = Http('ya.ru', 80, 'http')
+    h = Http('ya.ru')
     h.connect()
     h.request('/', 'POST')
     resp = h.parse(False)
     check( '<!DOCTYPE HTML PUBLIC' == resp[:21] )
 
     print 'GET to https://yandex.ru/',
-    h = Http('yandex.ru', 443, 'https')
+    h = Https('yandex.ru')
     h.connect()
     h.request('/', 'GET')
     resp = h.parse(False)
     check( type(resp) is dict and resp['status'] != 500 )
 
     print 'POST to https://yandex.ru/',
-    h = Http('yandex.ru', 443, 'https')
+    h = Https('yandex.ru')
     h.connect()
     h.request('/', 'POST')
     resp = h.parse(False)
