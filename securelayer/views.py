@@ -6,6 +6,7 @@ from django import forms
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import redirect
 
 from securelayer.http import Http
 
@@ -23,7 +24,7 @@ def sign_this(data):
     return signed.data.decode('utf-8')
 
 def secured_request(url, params={}, session_key=None):
-    """ Relizes data transfer through SSL. Sends params to URL. Uses Cookies."""
+    """ Realizes data transfer through SSL. Sends params to URL. Uses Cookies."""
     http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT)
     if session_key:
         http.session_id = session_key
@@ -40,9 +41,8 @@ def use_secured_form(request, form, context, caption, desc):
     if request.method == 'GET':
         session_key = request.GET.get('ss', None)
         if session_key:
-            ready, response, cookie = secured_request('/api/data/',
-                                                      {'service': 'data'},
-                                                      session_key)
+            ready, response, cookie = secured_request(
+                '/api/', {'service': 'data'}, session_key)
             form.import_json(response.get('data', None))
             return form
         else:
@@ -72,7 +72,7 @@ def form(local_form, caption=None, desc=None):
                 'body': _(u'The data would be transferred by open channel.'),
                 }
             check = ready, status, session_key = \
-                    secured_request('/api/check/', {'service': 'check'})
+                    secured_request('/api/', {'service': 'check'})
             if not ready:
                 form = local_form(request.POST or None, *args, **kwargs)
             else:

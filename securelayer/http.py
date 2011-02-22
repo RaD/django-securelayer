@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2009-2011 Ruslan Popov <ruslan.popov@gmail.com>
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
 import httplib, urllib, sys
@@ -22,6 +23,8 @@ class Http:
         self.connect()
         if protocol == 'https':
             self.protocol =  httplib.HTTPSConnection
+        if settings.DEBUG:
+            print 'SecureLayer URL: %s://%s:%s' % (protocol, host, port)
 
     def __del__(self):
         self.disconnect()
