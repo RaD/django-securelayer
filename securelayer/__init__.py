@@ -35,6 +35,9 @@ class SecuredForm(forms.Form):
             'help_text': field.help_text,
             'required': field.required,
             }
+        if ftype in ('CharField',):
+            if isinstance(field.widget, forms.widgets.PasswordInput):
+                ftype = 'PasswordField'
         if ftype in ('CharField', 'EmailField', 'URLField',):
             attrs.update( self.get_attr_list(field, ('min_length', 'max_length',)) )
         if ftype in ('ChoiceField', 'MultipleChoiceField',):
