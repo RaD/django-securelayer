@@ -48,7 +48,7 @@ class Http:
 
     def request(self, url, method='POST', params={}): # public
         if self.session_id and self.session_id not in self.headers:
-            self.headers.update( { 'Cookie': 'sessionid=%s' % self.session_id } )
+            self.headers.update( { 'Cookie': 'securelayer_sessionid=%s' % self.session_id } )
 
         params = urllib.urlencode(params)
         while True:
