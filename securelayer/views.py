@@ -25,7 +25,7 @@ def sign_this(data):
 
 def secured_request(url, params={}, session_key=None):
     """ Realizes data transfer through SSL. Sends params to URL. Uses Cookies."""
-    http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT)
+    http = Http(settings.SECURELAYER_HOST, settings.SECURELAYER_PORT, 'https')
     if session_key:
         http.session_id = session_key
     if http.request(url, 'POST', {'data': sign_this(params)}):
@@ -47,7 +47,7 @@ def use_secured_form(request, form, context, caption, desc):
             return form
         else:
             context.update( {
-                'action': 'http://%s:%s/show/' % (
+                'action': 'https://%s:%s/show/' % (
                     settings.SECURELAYER_HOST,
                     settings.SECURELAYER_PORT),
                 'button_list': [{'title': _(u'Redirect'),
