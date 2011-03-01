@@ -3,6 +3,8 @@ SecureLayer agent for Django Projects
 
 Application django-securelayer allows your site to get SSL faster.
 
+It uses [https://securelayer.ru/](https://securelayer.ru/) as backend. Feel free to join us. Secure your forms!
+
 ## Installation ##
 
 1. Install application into system
