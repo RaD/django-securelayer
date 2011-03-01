@@ -7,54 +7,60 @@ It uses [https://securelayer.ru/](https://securelayer.ru/) as backend. Feel free
 
 ## Installation ##
 
-1. Install application into system
+Install application into system
 
-        python setup.py install
+    python setup.py install
 
-   or use PIP
+or use PIP
 
-2. Add 'securelayer' into 'INSTALLED_APPS' in settings.py.
+Add 'securelayer' into 'INSTALLED_APPS' in settings.py.
 
-3. Add the following parameters into settings.py:
+Add the following parameters into settings.py:
 
-       SECURELAYER_HOST = 'securelayer.ru'
-       SECURELAYER_PORT = 443
-       GPG_HOMEDIR = '<PATH TO/gpgring>'
-       GPG_PASSPHRASE = '<PASSWORD FOR YOUR PRIVATE GPG KEY>'
+    SECURELAYER_HOST = 'securelayer.ru'
+    SECURELAYER_PORT = 443
+    GPG_HOMEDIR = '<PATH TO/gpgring>'
+    GPG_PASSPHRASE = '<PASSWORD FOR YOUR PRIVATE GPG KEY>'
 
-4. Edit GPG template (see gen_key.template) and change <VALUES> as you wish.
+## GPG key pair generation ##
 
-5. Generate your own GPG key pair:
+Edit PGP template (see gen_key.template) and change <VALUES> as you wish.
 
-       gpg --homedir=<PATH TO/gpgring> --batch --gen-key <PATH TO/gen_key.template>
+Generate your own PGP key pair:
 
-6. Register your account on http://securelayer.ru/ and submit your GPG public key there.
+    gpg --homedir=<PATH TO/gpgring> --batch --gen-key <PATH TO/gen_key.template>
 
-7. Let your form to work with SecureLayer:
+## Register your Web site ##
 
-   a) add the following into your forms' module:
+Register your account on [https://securelayer.ru/](https://securelayer.ru/) and submit your PGP public key there.
 
-          from securelayer import SecuredForm
+## Secure your Web forms ##
 
-   b) inherite your form from SecuredForm, not forms.Form.
+Let your form to work with SecureLayer:
 
-   c) add the following into your views' module:
+  a) add the following into your forms' module:
 
-          from securelayer import views as securelayer
+    from securelayer import SecuredForm
 
-   d) prepend your view with the decorator:
+  b) inherite your form from SecuredForm, not forms.Form.
 
-          @securelayer.form(<form_class>,
-                            caption=ugettext(u'The title of a form.'),
-                            desc=ugettext(u'Enter here a form's description.'))
+  c) add the following into your views' module:
 
-   e) process your form with a code like this:
+    from securelayer import views as securelayer
 
-          if request.method == 'POST' or \
-             'JSON' == getattr(form, 'source', None):
-              if form.is_valid():
-                  form.save()
-                  return redirect(reverse('post_success_view'))
+  d) prepend your view with the decorator:
+
+    @securelayer.form(<form_class>,
+                      caption=ugettext(u'The title of a form.'),
+                      desc=ugettext(u'Enter here a form's description.'))
+
+  e) process your form with a code like this:
+
+    if request.method == 'POST' or \
+       'JSON' == getattr(form, 'source', None):
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('post_success_view'))
 
 ## License ##
 
