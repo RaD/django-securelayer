@@ -39,30 +39,32 @@ def secured_request(url, params={}, session_key=None):
         response = { 'status': 598, 'desc': _('Request error.') }
     return (False, response, None)
 
-def use_secured_form(request, form, context, caption, desc):
+def use_secured_form(request, form_instance, context, caption, desc):
     """ Processes client's data through SecureLayer site."""
     if request.method == 'GET':
         session_key = request.GET.get('ss', None)
         if session_key:
             ready, response, cookie = secured_request(
                 '/api/', {'service': 'data'}, session_key)
-            form.import_json(response.get('data', None))
-            return form
+            form_instance.import_json(response.get('data', None))
+            return form_instance
         else:
             context.update( {
-                'action': '%s://%s:%s/show/' % (
-                    settings.DEBUG and 'http' or 'https',
-                    settings.SECURELAYER_HOST,
-                    settings.SECURELAYER_PORT),
                 'button_list': [{'title': _(u'Redirect'),
                                  'name': 'redirect', 'type': 'submit'},],
-                'body': _(u'You will be redirected on SecureLayer '
-                          'for secure data entering.')} )
+                } )
             params = {
                 'return_to': request.build_absolute_uri(),
-                'form': form.as_json(caption=caption, desc=desc)
+                'form': form_instance.as_json(caption=caption, desc=desc)
                 }
-            return NextStep(initial={'data': sign_this(params)})
+            form = NextStep(initial={'data': sign_this(params)})
+            form.description = _(u'You will be redirected on SecureLayer '
+                                 'for secure data entering.')
+            form.action_url = '%s://%s:%s/show/' % (
+                settings.DEBUG and 'http' or 'https',
+                settings.SECURELAYER_HOST,
+                settings.SECURELAYER_PORT)
+            return form
     else:
         # пост придти в эту форму не может
         raise Http404
